@@ -1,0 +1,58 @@
+/* 
+font-family: 'Indie Flower',cursive;
+font-family: 'Noto Serif JP',serif;
+*/
+.font-text {
+  font-family: 'Noto Serif JP', serif;
+}
+
+.font-number {
+  font-family: 'Indie Flower', cursive;
+}
+
+.container {
+  margin-top: 3rem;
+  max-width: 540px;
+}
+
+table {
+  box-shadow: 4px 4px 12px -6px rgba(20%, 20%, 40%, 0.5);
+}
+
+.nav {
+  background-color: aliceblue;
+}
+
+.dropdown-toggle::after {
+  display: none;
+}
+
+.title-date {
+  padding: 0.5rem 0;
+}
+
+.bottom-nav {
+  background-color: antiquewhite;
+}
+
+.nav-tabs .nav-link {
+  font-size: 2rem;
+}
+
+.total-amount {
+  color: goldenrod;
+}
+
+.icon-category {
+  color: cadetblue;
+}
+
+.index-edit:hover {
+  color: orange;
+  font-size: 1.5rem;
+}
+
+.index-delete:hover {
+  color: red;
+  font-size: 1.5rem;
+}
