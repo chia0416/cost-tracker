@@ -1,9 +1,10 @@
 const express = require('express')
 const { engine } = require('express-handlebars')
+
+require('./config/mongoose')
 const app = express()
 const port = 3000
 
-// console.log(app.listen(port))
 app.engine('handlebars', engine({ defaultLayout: 'main'}))
 app.set('view engine', 'handlebars')
 
