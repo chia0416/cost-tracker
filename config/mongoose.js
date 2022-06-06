@@ -14,4 +14,3 @@ db.once('open', () => {
 })
 
 module.exports = db
-// mongodb + srv://expense:<password>@cluster0.7skfu.mongodb.net/?retryWrites=true&w=majority
