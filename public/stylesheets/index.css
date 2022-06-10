@@ -56,3 +56,18 @@ table {
   color: red;
   font-size: 1.5rem;
 }
+
+.icon-category {
+  font-size: 2rem;
+}
+.paidAlone {
+  font-size: small;
+    max-height: 20px;
+    max-width: 40%;
+    margin: auto;
+    border-style: solid;
+    border-width: thin;
+    background-color: papayawhip;
+    /* background-color: lightblue; */
+    border-radius: 50px;
+}

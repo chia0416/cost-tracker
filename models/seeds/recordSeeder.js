@@ -55,9 +55,9 @@ db.once('open', async () => {
 
     await RecordList.forEach((data, index) => {
       data.categoryId = categoryObj[index]._id
-        data.userId = userObj[0]._id
+      data.userId = userObj[0]._id
       if (!data.isPaidAlone) {
-          data.partnerId = partnerObj[0]._id
+        data.partnerId = partnerObj[0]._id
       }
     })
     console.log(RecordList)
@@ -78,5 +78,5 @@ db.once('open', async () => {
   } catch (err) {
     console.error(err);
   }
-  
+
 })

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 
-mongoose.connect(process.env.MONGODB_URI)
+// mongoose.connect(process.env.MONGODB_URI)
+mongoose.connect("mongodb+srv://chia:cost@cluster0.kq1t3p9.mongodb.net/cost-tracker?retryWrites=true&w=majority")
 
 // 取得資料庫連線狀態
 const db = mongoose.connection

@@ -24,17 +24,22 @@
 
 
 <table class="table text-center table-sm align-middle table-striped table-hover my-3">
-  {{!-- {{#each records}} --}}
+  {{#each recordList}}
   <tr>
     <td class="icon-category">
-      <i class="fa-solid fa-sack-dollar fa-2xl"></i>
-      {{{ this.iconName }}}
+    {{{ this.categoryId.icon }}}
     </td>
     <td>
-      <div class="font-text index-name">supermarket {{ this.name }}</div>
-      <small class="font-number index-date">2022-01-02 {{ this.date }}</small>
+      <div class="font-text index-name">{{ this.nameOfCost }}</div>
+      <small class="font-number index-date">{{ this.date }}</small>
     </td>
-    <td class="font-number">20422円 {{this.amount}}</td>
+    <td class="font-number">
+      <div>{{this.amount}} 円</div>
+      {{#if isPaidAlone }}
+      {{else}}
+      <div class="paidAlone">AA</div>
+      {{/if}}
+    </td>
     <td>
       <form action="/records/edit/{{this._id}}" method="GET">
         <button type="submit" class="index-edit btn btn-light-sm">
@@ -49,7 +54,7 @@
       </form>
     </td>
   </tr>
-  {{!-- {{/each}} --}}
+  {{/each}}
 </table>
 </div>
 
