@@ -8,21 +8,23 @@ const costController = {
   getRecordByList: (req, res) => {
     RecordModel.find()
       .populate('categoryId')
-      .populate('userId')
-      .populate('partnerId')
       .lean()
       .then(recordList => {
-        recordList.forEach((data, index) => {
+        recordList.forEach((data) => {
           data.date = data.date.toISOString().slice(0, 10)
           data.icon = data.categoryId.icon
-          console.log(index)
-          console.log('----------')
-          console.log(data)
         })
         res.render('index', { recordList })
       })
       .catch(err => console.error(err))
+  },
+
+  getRecordCreate: (req, res) => {
+    const isCreatedPage = true;
+    return res.render('create', { isCreatedPage })
   }
+
+
 }
 
 module.exports = costController

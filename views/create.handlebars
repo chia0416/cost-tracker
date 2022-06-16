@@ -1,0 +1,91 @@
+<div class="container new-page">
+
+  <div class="box">
+    <h2 class="box-title">請輸入支出</h2>
+    <form class="row" action="/records" method="POST">
+      <div class="form-group col-md-12">
+        <label for="name" class="form-label">名前:</label>
+        <input class="form-control input-box" type="text" id="name" name="name" value=""
+          placeholder="例：服、家賃...など" required>
+      </div>
+      <div class="form-group col-6 mt-2">
+        <label for="date" class="form-label">日期:</label>
+        <input class="input-box  form-control" type="date" id="date" name="date" value="" required>
+      </div>
+      <div class="form-group col-6 mt-2">
+        <label for="category" class="form-label">類別:</label>
+        <select class="form-select form-control" aria-label=".form-select-lg example" name="category" id="category">
+          <option selected>項目</option>
+          <option value="1">One</option>
+          <option value="2">Two</option>
+          <option value="3">Three</option>
+        </select>
+      </div>
+      <div class="form-group col-6 mt-2">
+        <label for="merchant" class="form-label">払った名前:</label>
+        <select class="form-select form-control" aria-label=".form-select-lg example" name="merchant" id="merchant">
+          <option value="1">ミキ</option>
+          <option value="2">ジャホン</option>
+        </select>
+      </div>
+      <div class="form-group col-6 mt-2">
+        <label for="merchant" class="form-label">店の名前:</label>
+        <input class="form-control input-box" type="text" id="merchant" name="merchant" value="" placeholder="選填">
+      </div>
+      <div class="form-group mt-2">
+        <label for="amount" class="form-label">支払った金額:</label>
+        <input class="input-box form-control" type="number" id="amount" name="amount" maxlength="8" value="0" required>
+        <input class="form-range col-3" min="0" max="10000" step="100" id="range" oninput="change()" type="range" 　>
+      </div>
+      <div class="from-group col-6 mt-2">
+        <div>
+          <input id="checkbox" class="form-check-input" type="checkbox" onclick="showDisplay()" checked>
+          <label class="form-check-label" for="flexCheckDefault">
+            一人で払う？
+          </label>
+        </div>
+        <div style="display: none;">
+          <input id="checkbox2" class="form-check-input" type="checkbox" onclick="showDisplay()">
+          <label class="form-check-label" for="flexCheckDefault">
+            半分づつ払う?
+          </label>
+        </div>
+      </div>
+      <div class="form-group col-6" style="display: none;">
+        <label for="friendPaidAmount" class="form-label">他の人の払った金額:</label>
+        <input id="friendPaidAmount" class="input-box form-control " type="number" id="friendPaidAmount"
+          name="friendPaidAmount" maxlength="8" min="0" value="5000">
+      </div>
+
+      <div class="d-grid gap-2 mx-auto mt-3">
+        <button type="submit" class="btn btn-outline-primary">Create</button>
+        <button type="submit" class="btn btn-outline-secondary"> return </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function change() {
+    const num = document.getElementById("range");
+    const location = document.getElementById("amount");
+    location.value = num.value;
+  }
+
+  function showDisplay() {
+    const checkbox = document.getElementById("checkbox");
+    const location = document.getElementById("friendPaidAmount");
+    const checkbox2 = document.getElementById("checkbox2")
+    const amount = document.getElementById("amount")
+    if (checkbox.checked) {
+      checkbox2.parentElement.style.display = 'none'
+      location.parentElement.style.display = 'none'
+    } else {
+      checkbox2.parentElement.style.display = 'block'
+      location.parentElement.style.display = 'block'
+    }
+    if (checkbox2.checked) {
+      location.value = amount.value / 2
+    }
+  } 
+</script>

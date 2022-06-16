@@ -18,8 +18,11 @@
 </head>
 
 <body>
-  <!-- data navigation -->
+  <!-- date navigation -->
   <header class="nav fixed-top justify-content-between">
+    {{#if isCreatedPage}}
+    <div class="createdPage m-auto"> 新增 </div>
+    {{else}}
     <li class="month-minus nav-item">
       <a class="nav-link active" aria-current="page" href="#"><i class="bi bi-caret-left"></i></a>
     </li>
@@ -44,11 +47,12 @@
     <li class="month-pluse nav-item">
       <a class="nav-link" href="#"><i class="bi bi-caret-right"></i></a>
     </li>
+    {{/if}}
   </header>
 
-  {{!-- <main class="mt-5"> --}}
+  <main class="mt-5">
     {{{ body }}}
-  {{!-- </main> --}}
+    </main>
 
   <footer class="bottom-nav fixed-bottom justify-content-between nav nav-tabs">
     <li class="list nav-item">
@@ -58,7 +62,7 @@
       <a class="nav-link" href="#"><i class="bi bi-calendar3"></i></a>
     </li>
     <li class="create nav-item">
-      <a class="nav-link active" aria-current="page" href="#"><i class="bi bi-pencil-square"></i></a>
+      <a class="nav-link active" aria-current="page" href="/record/new"><i class="bi bi-pencil-square"></i></a>
     </li>
     <li class="pie-chart nav-item">
       <a class="nav-link" href="#"><i class="bi bi-pie-chart"></i></a>

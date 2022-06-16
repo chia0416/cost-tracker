@@ -9,9 +9,11 @@ font-family: 'Noto Serif JP',serif;
 .font-number {
   font-family: 'Indie Flower', cursive;
 }
+header {
+height: 40px;
+}
 
 .container {
-  margin-top: 3rem;
   max-width: 540px;
 }
 
@@ -71,3 +73,9 @@ table {
     /* background-color: lightblue; */
     border-radius: 50px;
 }
+
+/* .form-group {
+  font-size: 1.5rem;
+  margin-bottom: 3rem;
+  display: flex;
+} */
