@@ -2,11 +2,11 @@ const RecordModel = require('../models/record')
 const CategoryModel = require('../models/category')
 const PartnerModel = require('../models/partner')
 const UserModel = require('../models/user')
-const category = require('../models/category')
+const tools = require('../public/javascripts/getDate')
 
 const costController = {
   getRecordByList: (req, res) => {
-    RecordModel.find()
+    return RecordModel.find()
       .populate('categoryId')
       .lean()
       .then(recordList => {
@@ -20,11 +20,69 @@ const costController = {
   },
 
   getRecordCreate: (req, res) => {
-    const isCreatedPage = true;
-    return res.render('create', { isCreatedPage })
+    Promise.all([CategoryModel.find().lean(), PartnerModel.find().lean()])
+      .then(data => {
+        const date = tools.getToday()
+        const isCreatedPage = true
+        const category = data[0]
+        const partner = data[1]
+        res.render('create', { isCreatedPage, date, category, partner })
+      })
+      .catch(err => console.error(err))
+  },
+
+  recordCreated: async (req, res) => {
+    try {
+      const { nameOfCost, date, categoryId, partnerId, merchant, amount, paidAlone, friendPaidAmount } = req.body
+      if(amount < 0 || friendPaidAmount < 0) {
+        return res.redirect('/record/new')
+      }
+      let userId = ''
+      let anotherId = ''
+      let isPaidAlone = true
+      //get userId
+      await PartnerModel.findById(partnerId)
+        .then((data) => {
+          userId = data.userId
+        })
+
+      if (!paidAlone) {
+        isPaidAlone = false
+        //get another Id for friendPaidAmount
+        await PartnerModel.find({ userId }).then(
+          (data) => {
+            anotherId = data.find(d => d._id != partnerId)._id
+          }
+        )
+        await RecordModel.create({
+          nameOfCost: nameOfCost,
+          date: date,
+          categoryId: categoryId,
+          merchant: merchant,
+          amount: friendPaidAmount,
+          userId: userId,
+          partnerId: anotherId,
+          isPaidAlone: paidAlone,
+        })
+      }
+
+      await RecordModel.create({
+        nameOfCost: nameOfCost,
+        date: date,
+        categoryId: categoryId,
+        merchant: merchant,
+        amount: amount,
+        userId: userId,
+        partnerId: partnerId,
+        isPaidAlone: isPaidAlone,
+      })
+
+      return res.redirect('/')
+
+    } catch (e) {
+      console.log(e)
+    }
   }
-
-
 }
 
 module.exports = costController

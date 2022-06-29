@@ -36,6 +36,7 @@ const recordSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Partner',
     index: true,
+    // require: true,
   },
   isPaidAlone:{
     type:Boolean

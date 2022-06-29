@@ -1,31 +1,31 @@
 <div class="container new-page">
 
   <div class="box">
-    <h2 class="box-title">請輸入支出</h2>
-    <form class="row" action="/records" method="POST">
+    <h2 class="box-title text-center">請輸入支出</h2>
+    <form class="row" action="/record/new" method="POST">
       <div class="form-group col-md-12">
-        <label for="name" class="form-label">名前:</label>
-        <input class="form-control input-box" type="text" id="name" name="name" value=""
+        <label for="nameOfCost" class="form-label">名前:</label>
+        <input class="form-control input-box" type="text" id="nameOfCost" name="nameOfCost" value="1234"
           placeholder="例：服、家賃...など" required>
       </div>
       <div class="form-group col-6 mt-2">
         <label for="date" class="form-label">日期:</label>
-        <input class="input-box  form-control" type="date" id="date" name="date" value="" required>
+        <input class="input-box  form-control" type="date" id="date" name="date" value='{{date}}' required>
       </div>
       <div class="form-group col-6 mt-2">
-        <label for="category" class="form-label">類別:</label>
-        <select class="form-select form-control" aria-label=".form-select-lg example" name="category" id="category">
-          <option selected>項目</option>
-          <option value="1">One</option>
-          <option value="2">Two</option>
-          <option value="3">Three</option>
+        <label for="categoryId" class="form-label">類別:</label>
+        <select class="form-select form-control" aria-label=".form-select-lg example" name="categoryId" id="categoryId">
+          {{#each category}}
+          <option value="{{this._id}}">{{this.name}}</option>
+          {{/each}}
         </select>
       </div>
       <div class="form-group col-6 mt-2">
-        <label for="merchant" class="form-label">払った名前:</label>
-        <select class="form-select form-control" aria-label=".form-select-lg example" name="merchant" id="merchant">
-          <option value="1">ミキ</option>
-          <option value="2">ジャホン</option>
+        <label for="partnerId" class="form-label">払った名前:</label>
+        <select class="form-select form-control" aria-label=".form-select-lg example" name="partnerId" id="partnerId">
+          {{#each partner}}
+          <option value="{{this._id}}">{{this.name}}</option>
+          {{/each}}
         </select>
       </div>
       <div class="form-group col-6 mt-2">
@@ -39,13 +39,14 @@
       </div>
       <div class="from-group col-6 mt-2">
         <div>
-          <input id="checkbox" class="form-check-input" type="checkbox" onclick="showDisplay()" checked>
+          <input id="checkbox" class="form-check-input" name="paidAlone" type="checkbox" onclick="showDisplay()"
+            checked>
           <label class="form-check-label" for="flexCheckDefault">
             一人で払う？
           </label>
         </div>
         <div style="display: none;">
-          <input id="checkbox2" class="form-check-input" type="checkbox" onclick="showDisplay()">
+          <input id="checkbox2" class="form-check-input" name="AA" type="checkbox" onclick="paidHalf()">
           <label class="form-check-label" for="flexCheckDefault">
             半分づつ払う?
           </label>
@@ -54,12 +55,12 @@
       <div class="form-group col-6" style="display: none;">
         <label for="friendPaidAmount" class="form-label">他の人の払った金額:</label>
         <input id="friendPaidAmount" class="input-box form-control " type="number" id="friendPaidAmount"
-          name="friendPaidAmount" maxlength="8" min="0" value="5000">
+          name="friendPaidAmount" maxlength="8" min="0" value="0" onfocusout="amountChange()">
       </div>
 
       <div class="d-grid gap-2 mx-auto mt-3">
-        <button type="submit" class="btn btn-outline-primary">Create</button>
-        <button type="submit" class="btn btn-outline-secondary"> return </button>
+        <button type="submit" onclick="mention()" class="btn btn-outline-primary">Create</button>
+        <button type="button" onclick="history.back()" class=" btn btn-outline-secondary"> return</button>
       </div>
     </form>
   </div>
@@ -71,21 +72,47 @@
     const location = document.getElementById("amount");
     location.value = num.value;
   }
-
   function showDisplay() {
     const checkbox = document.getElementById("checkbox");
     const location = document.getElementById("friendPaidAmount");
     const checkbox2 = document.getElementById("checkbox2")
     const amount = document.getElementById("amount")
     if (checkbox.checked) {
-      checkbox2.parentElement.style.display = 'none'
       location.parentElement.style.display = 'none'
+      location.value = 0
+      checkbox2.parentElement.style.display = 'none'
+      checkbox2.checked = false
     } else {
       checkbox2.parentElement.style.display = 'block'
       location.parentElement.style.display = 'block'
     }
+
+  }
+  function paidHalf() {
+    const location = document.getElementById("friendPaidAmount")
+    const checkbox2 = document.getElementById("checkbox2")
+    const amount = document.getElementById("amount")
     if (checkbox2.checked) {
+      localStorage.setItem('originalAmount', amount.value)
       location.value = amount.value / 2
+      amount.value = amount.value - location.value
     }
-  } 
+    if (!checkbox2.checked) {
+      amount.value = Number(localStorage.getItem('originalAmount'))
+      localStorage.removeItem('originalAmount')
+      location.value = 0
+    }
+  }
+  function amountChange() {
+    const amount = document.getElementById("amount")
+    const location = document.getElementById("friendPaidAmount")
+    amount.value = amount.value - location.value
+  }
+  function mention() {
+    const amount = document.getElementById("amount")
+    const location = document.getElementById("friendPaidAmount")
+    if (amount.value < 0 || location.value < 0) {
+      alert('金額はマイナスができません');
+    }
+  }
 </script>

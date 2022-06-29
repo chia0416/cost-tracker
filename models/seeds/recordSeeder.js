@@ -48,19 +48,19 @@ const RecordList = [
 db.once('open', async () => {
   try {
     await UserModel.create({ name: SEED_USER.name })
-    await PartnerModel.create({ name: SEED_PARTNER.name })
     const userObj = await UserModel.find().lean()
+
+    await PartnerModel.create({ name: SEED_USER.name, userId: userObj[0]._id })
+    await PartnerModel.create({ name: SEED_PARTNER.name, userId: userObj[0]._id })
     const partnerObj = await PartnerModel.find().lean()
     const categoryObj = await CategoryModel.find().lean()
 
     await RecordList.forEach((data, index) => {
       data.categoryId = categoryObj[index]._id
       data.userId = userObj[0]._id
-      if (!data.isPaidAlone) {
-        data.partnerId = partnerObj[0]._id
-      }
+      data.partnerId = partnerObj[0]._id
     })
-    console.log(RecordList)
+
     RecordList.forEach(data => {
       RecordModel.create({
         nameOfCost: data.nameOfCost,

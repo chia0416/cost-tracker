@@ -2,7 +2,7 @@
 const express = require('express')
 const { engine } = require('express-handlebars')
 const methodOverride = require('method-override')
-if(process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config()
 }
 
@@ -14,10 +14,11 @@ require('./config/mongoose')
 const app = express()
 const port = 3000
 
-app.engine('handlebars', engine({ defaultLayout: 'main'}))
+app.engine('handlebars', engine({ defaultLayout: 'main' }))
 app.set('view engine', 'handlebars')
 app.use(methodOverride('_method'))
 app.use(express.static('public'))
+app.use(express.urlencoded({ extended: true }))
 
 app.use(routes)
 

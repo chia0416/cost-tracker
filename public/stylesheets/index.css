@@ -3,14 +3,15 @@ font-family: 'Indie Flower',cursive;
 font-family: 'Noto Serif JP',serif;
 */
 .font-text {
-  font-family: 'Noto Serif JP', serif;
+  font-family: 'Noto Serif JP', serif ;
 }
 
 .font-number {
   font-family: 'Indie Flower', cursive;
 }
+
 header {
-height: 40px;
+  height: 40px;
 }
 
 .container {
@@ -62,16 +63,17 @@ table {
 .icon-category {
   font-size: 2rem;
 }
+
 .paidAlone {
   font-size: small;
-    max-height: 20px;
-    max-width: 40%;
-    margin: auto;
-    border-style: solid;
-    border-width: thin;
-    background-color: papayawhip;
-    /* background-color: lightblue; */
-    border-radius: 50px;
+  max-height: 20px;
+  max-width: 40%;
+  margin: auto;
+  border-style: solid;
+  border-width: thin;
+  background-color: papayawhip;
+  /* background-color: lightblue; */
+  border-radius: 50px;
 }
 
 /* .form-group {
