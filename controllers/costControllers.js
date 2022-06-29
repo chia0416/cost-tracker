@@ -5,18 +5,53 @@ const UserModel = require('../models/user')
 const tools = require('../public/javascripts/getDate')
 
 const costController = {
-  getRecordByList: (req, res) => {
-    return RecordModel.find()
-      .populate('categoryId')
-      .lean()
-      .then(recordList => {
-        recordList.forEach((data) => {
-          data.date = data.date.toISOString().slice(0, 10)
-          data.icon = data.categoryId.icon
-        })
-        res.render('index', { recordList })
+  getRecordByList: async (req, res) => {
+    try {
+      //after register page finish change here
+      const user = await UserModel.findOne()
+
+      //for partnerId Category
+      const partner = await PartnerModel.aggregate([
+        { $project: { userId: 1, id: 1, name: 1 } },
+        { $match: { userId: user._id } }
+      ])
+      //for start index
+      const admin = await PartnerModel.findOne({ name: user.name })
+      const keyPartnerId = req.query.partnerId
+      let displayId = admin._id
+      if (keyPartnerId) {
+        displayId = keyPartnerId
+      }
+
+      //get certain record
+      const recordList = await RecordModel.find({ partnerId: displayId }).populate('categoryId').lean()
+      let totalAmount = 0
+      recordList.forEach((data) => {
+        totalAmount += data.amount
+        data.date = data.date.toISOString().slice(0, 10)
+        data.icon = data.categoryId.icon
       })
-      .catch(err => console.error(err))
+
+      res.render('index', { partner, recordList, totalAmount })
+    } catch (e) {
+      console.error(e)
+    }
+    // console.log(req.query)
+    // return RecordModel.find()
+    //   .populate('categoryId')
+    //   .populate('partnerId')
+    //   .lean()
+    //   .then(recordList => {
+    //     console.log(recordList)
+    //     let totalAmount = 0
+    //     recordList.forEach((data) => {
+    //       totalAmount += data.amount
+    //       data.date = data.date.toISOString().slice(0, 10)
+    //       data.icon = data.categoryId.icon
+    //     })
+    //     res.render('index', { recordList, totalAmount })
+    //   })
+    //   .catch(err => console.error(err))
   },
 
   getRecordCreate: (req, res) => {
@@ -34,7 +69,7 @@ const costController = {
   recordCreated: async (req, res) => {
     try {
       const { nameOfCost, date, categoryId, partnerId, merchant, amount, paidAlone, friendPaidAmount } = req.body
-      if(amount < 0 || friendPaidAmount < 0) {
+      if (amount < 0 || friendPaidAmount < 0) {
         return res.redirect('/record/new')
       }
       let userId = ''
@@ -80,7 +115,7 @@ const costController = {
       return res.redirect('/')
 
     } catch (e) {
-      console.log(e)
+      console.error(e)
     }
   }
 }
