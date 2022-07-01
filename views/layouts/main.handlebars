@@ -25,37 +25,39 @@
       <div class="createdPage m-auto"> 新增 </div>
       {{else}}
       <li class="month-minus nav-item">
-        <a class="nav-link active" aria-current="page" href="#"><i class="bi bi-caret-left"></i></a>
+        <a class="nav-link active" aria-current="page" href="?monthLeft={{displayMonth}}"><i class="bi bi-caret-left"></i></a>
       </li>
       <li class="nav-item d-flex justify-content-center">
         <div class="nav-item dropdown me-3">
           <a class="title-date nav-link dropdown-toggle" data-bs-toggle="dropdown" href="?partnerId=" role="button"
-            aria-expanded="false">Miki</a>
+            aria-expanded="false">{{displayName}}</a>
           <ul class="dropdown-menu">
             {{#each partner}}
-            <li><a class="dropdown-item" href="?partnerId={{this._id}}">{{this.name}}</a></li>
+            <li><a class="dropdown-item" href="?partnerId={{this._id}}" onclick="">{{this.name}}</a></li>
             {{/each}}
           </ul>
         </div>
         <div class="nav-item dropdown">
-          <a class="title-date nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
-            aria-expanded="false">2022年</a>
+          <a class="title-date nav-link dropdown-toggle" data-bs-toggle="dropdown" href="?year=" role="button"
+            aria-expanded="false">{{displayYear}}年</a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">2022年</a></li>
-            <li><a class="dropdown-item" href="#">2021年</a></li>
+            {{#each yearList}}
+            <li><a class="dropdown-item" href="?year={{this}}">{{this}}年</a></li>
+            {{/each}}
           </ul>
         </div>
         <div class="nav-item dropdown">
-          <a class="title-date nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
-            aria-expanded="false">6月</a>
+          <a class="title-date nav-link dropdown-toggle" data-bs-toggle="dropdown" href="?month=" role="button"
+            aria-expanded="false">{{displayMonth}}月</a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">6月</a></li>
-            <li><a class="dropdown-item" href="#">5月</a></li>
+            {{#each monthList}}
+            <li><a class="dropdown-item" href="?month={{this}}">{{this}}月</a></li>
+            {{/each}}
           </ul>
         </div>
       </li>
       <li class="month-pluse nav-item">
-        <a class="nav-link" href="#"><i class="bi bi-caret-right"></i></a>
+        <a class="nav-link" href="?monthRight={{displayMonth}}"><i class="bi bi-caret-right"></i></a>
       </li>
       {{/if}}
     </header>
@@ -90,3 +92,9 @@
 </body>
 
 </html>
+
+<script>
+  getLocalStorage(){
+
+  }
+</script>

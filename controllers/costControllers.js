@@ -3,6 +3,7 @@ const CategoryModel = require('../models/category')
 const PartnerModel = require('../models/partner')
 const UserModel = require('../models/user')
 const tools = require('../public/javascripts/getDate')
+const store = require('store')
 
 const costController = {
   getRecordByList: async (req, res) => {
@@ -11,47 +12,122 @@ const costController = {
       const user = await UserModel.findOne()
 
       //for partnerId Category
-      const partner = await PartnerModel.aggregate([
-        { $project: { userId: 1, id: 1, name: 1 } },
-        { $match: { userId: user._id } }
-      ])
-      //for start index
-      const admin = await PartnerModel.findOne({ name: user.name })
-      const keyPartnerId = req.query.partnerId
-      let displayId = admin._id
-      if (keyPartnerId) {
-        displayId = keyPartnerId
+      const partner = await PartnerModel.find().lean()
+
+      const nameQuery = req.query.partnerId
+      const monthQuery = req.query.month
+      const yearQuery = req.query.year
+      const monthLeftQuery = req.query.monthLeft
+      const monthRightQuery = req.query.monthRight
+
+      const nameStore = store.get('nameStore')
+      const monthStore = store.get('monthStore')
+      const yearStore = store.get('yearStore')
+
+      let displayId = ''
+      //get displayId -first time -nameQuery -otherSearch
+      if (nameQuery) {
+        displayId = nameQuery
+        //only when nameQuery  
+        store.set('nameStore', { nameId: nameQuery })
+      } else if (nameStore) {
+        // no nameQuery
+        displayId = nameStore.nameId
+      } else {
+        // no nameQuery && no nameStore
+        const admin = await PartnerModel.findOne({ name: user.name })
+        displayId = admin._id
       }
 
-      //get certain record
-      const recordList = await RecordModel.find({ partnerId: displayId }).populate('categoryId').lean()
+      const date = tools.getToday()
+      //filter by year
+      let displayYear = ''
+      if (yearQuery) {
+        displayYear = yearQuery
+        store.set('yearStore', { yearId: yearQuery })
+      } else if (yearStore) {
+        displayYear = yearStore.yearId
+      } else {
+        displayYear = date.slice(0, 4)
+      }
+
+      //filter by month
+      let displayMonth = date.slice(5, 7)
+      if (monthQuery) {
+        displayMonth = monthQuery
+        store.set('monthStore', { monthId: monthQuery })
+      } else if (monthStore) {
+        displayMonth = monthStore.monthId
+      }
+      if (monthLeftQuery) {
+        displayMonth = Number(displayMonth) - 1
+        if (displayMonth < 10) {
+          displayMonth = '0' + displayMonth
+        }
+        store.set('monthStore', { monthId: displayMonth })
+      }
+      if (monthRightQuery) {
+        displayMonth = Number(displayMonth) + 1
+        if (displayMonth < 10) {
+          displayMonth = '0' + displayMonth
+        }
+        if (displayMonth > 10) {
+          displayMonth = String(displayMonth)
+        }
+        store.set('monthStore', { monthId: displayMonth })
+      }
+      if (displayMonth > 12) {
+        displayMonth = '01'
+        displayYear = Number(displayYear) + 1
+        store.set('monthStore', { monthId: displayMonth })
+        store.set('yearStore', { yearId: displayYear })
+      }
+      if (displayMonth < 0) {
+        displayMonth = '12'
+        displayYear = Number(displayYear) - 1
+        store.set('monthStore', { monthId: displayMonth })
+        store.set('yearStore', { yearId: displayYear })
+      }
+      //for showDisplayName after get certain Id
+      const display = await PartnerModel.findById(displayId)
+
+      //filter by name 先找人在查月份（固定人不固定月份）
+      let recordList = await RecordModel.find({ partnerId: displayId }).populate('categoryId').lean()
+
+      // format the date
+      let dateList = []
+      recordList.forEach((data) => {
+        data.date = data.date.toISOString().slice(0, 10)
+        dateList.push(data.date.slice(0, 7))
+        data.month = data.date.slice(5, 7)
+        data.year = data.date.slice(0, 4)
+      })
+
+      //for display date by order
+      dateList = dateList.filter((element, index, arr) => {
+        return arr.indexOf(element) === index
+      })
+      let yearList = Array.from(dateList, date => date.slice(0, 4))
+      let monthList = Array.from(dateList, date => date.slice(5, 7))
+      yearList = [...(new Set(yearList))]
+      monthList = [...(new Set(monthList))]
+      monthList = monthList.sort((a, b) => a - b)
+
+      //get filter recordList
+      recordList = recordList.filter(data => {
+        if (data.month === displayMonth && data.year === displayYear) {
+          return data
+        }
+      })
       let totalAmount = 0
       recordList.forEach((data) => {
         totalAmount += data.amount
-        data.date = data.date.toISOString().slice(0, 10)
-        data.icon = data.categoryId.icon
       })
 
-      res.render('index', { partner, recordList, totalAmount })
+      res.render('index', { partner, recordList, totalAmount, monthList, yearList, displayName: display.name, displayYear, displayMonth })
     } catch (e) {
       console.error(e)
     }
-    // console.log(req.query)
-    // return RecordModel.find()
-    //   .populate('categoryId')
-    //   .populate('partnerId')
-    //   .lean()
-    //   .then(recordList => {
-    //     console.log(recordList)
-    //     let totalAmount = 0
-    //     recordList.forEach((data) => {
-    //       totalAmount += data.amount
-    //       data.date = data.date.toISOString().slice(0, 10)
-    //       data.icon = data.categoryId.icon
-    //     })
-    //     res.render('index', { recordList, totalAmount })
-    //   })
-    //   .catch(err => console.error(err))
   },
 
   getRecordCreate: (req, res) => {
@@ -61,6 +137,7 @@ const costController = {
         const isCreatedPage = true
         const category = data[0]
         const partner = data[1]
+        console.log(date)
         res.render('create', { isCreatedPage, date, category, partner })
       })
       .catch(err => console.error(err))

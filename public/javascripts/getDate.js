@@ -8,10 +8,15 @@ const tools = {
     if (m > 10) {
       date = y + '-' + m + '-' + d
     } else {
-      date = y + '-0' + m + '-' + d
+      if (d > 10) {
+        date = y + '-0' + m + '-' + d
+      } else {
+        date = y + '-0' + m + '-0' + d
+      }
+
     }
     return date
-  }
+  },
 }
 
 module.exports = tools
