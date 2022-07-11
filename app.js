@@ -14,7 +14,10 @@ require('./config/mongoose')
 const app = express()
 const port = 3000
 
-app.engine('handlebars', engine({ defaultLayout: 'main' }))
+app.engine('handlebars', engine({
+  defaultLayout: 'main',
+  helpers: require('./config/handlebars-helpers')
+}))
 app.set('view engine', 'handlebars')
 app.use(methodOverride('_method'))
 app.use(express.static('public'))

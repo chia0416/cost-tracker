@@ -2,10 +2,10 @@
 
   <div class="box">
     <h2 class="box-title text-center">請輸入支出</h2>
-    <form class="row" action="/record/new" method="POST">
+    <form class="row" action="/record/edit" method="POST">
       <div class="form-group col-md-12">
         <label for="nameOfCost" class="form-label">名前:</label>
-        <input class="form-control input-box" type="text" id="nameOfCost" name="nameOfCost" value=""
+        <input class="form-control input-box" type="text" id="nameOfCost" name="nameOfCost" value="{{record.nameOfCost}}"
           placeholder="例：服、家賃...など" required>
       </div>
       <div class="form-group col-6 mt-2">
@@ -14,9 +14,9 @@
       </div>
       <div class="form-group col-6 mt-2">
         <label for="categoryId" class="form-label">類別:</label>
-        <select class="form-select form-control" aria-label=".form-select-lg example" name="categoryId" id="categoryId">
+        <select class="form-select form-control" aria-label=".form-select-lg example" value="1" placeholder='2'name="categoryId" id="categoryId">
           {{#each category}}
-          <option value="{{this._id}}">{{this.name}}</option>
+          <option {{#ifCond this._id ../cateId}} selected {{/ifCond}} value="{{this._id}}">{{this.name}}</option>
           {{/each}}
         </select>
       </div>
@@ -39,27 +39,27 @@
       </div>
       <div class="from-group col-6 mt-2">
         <div>
-          <input id="checkbox" class="form-check-input" name="paidAlone" type="checkbox" onclick="showDisplay()"
+          <input id="checkbox" class="form-check-input" name="paidAlone" type="checkbox"
             checked>
           <label class="form-check-label" for="flexCheckDefault">
             一人で払う？
           </label>
         </div>
-        <div style="display: none;">
+        <div>
           <input id="checkbox2" class="form-check-input" name="AA" type="checkbox" onclick="paidHalf()">
           <label class="form-check-label" for="flexCheckDefault">
             半分づつ払う?
           </label>
         </div>
       </div>
-      <div class="form-group col-6" style="display: none;">
+      <div class="form-group col-6">
         <label for="friendPaidAmount" class="form-label">他の人の払った金額:</label>
         <input id="friendPaidAmount" class="input-box form-control " type="number" id="friendPaidAmount"
           name="friendPaidAmount" maxlength="8" min="0" value="0" onfocusout="amountChange()">
       </div>
 
       <div class="d-grid gap-2 mx-auto mt-3">
-        <button type="submit" onclick="mention()" class="btn btn-outline-primary">Create</button>
+        <button type="submit" onclick="mention()" class="btn btn-outline-primary">Edit</button>
         <button type="button" onclick="history.back()" class=" btn btn-outline-secondary"> return</button>
       </div>
     </form>
@@ -71,22 +71,6 @@
     const num = document.getElementById("range");
     const location = document.getElementById("amount");
     location.value = num.value;
-  }
-  function showDisplay() {
-    const checkbox = document.getElementById("checkbox");
-    const location = document.getElementById("friendPaidAmount");
-    const checkbox2 = document.getElementById("checkbox2")
-    const amount = document.getElementById("amount")
-    if (checkbox.checked) {
-      location.parentElement.style.display = 'none'
-      location.value = 0
-      checkbox2.parentElement.style.display = 'none'
-      checkbox2.checked = false
-    } else {
-      checkbox2.parentElement.style.display = 'block'
-      location.parentElement.style.display = 'block'
-    }
-
   }
   function paidHalf() {
     const location = document.getElementById("friendPaidAmount")

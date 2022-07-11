@@ -23,39 +23,39 @@
   </div>
 
 
-<table class="table text-center table-sm align-middle table-striped table-hover my-3">
-  {{#each recordList}}
-  <tr>
-    <td class="icon-category">
-    {{{ this.categoryId.icon }}}
-    </td>
-    <td>
-      <div class="font-text index-name">{{ this.nameOfCost }}</div>
-      <small class="font-number index-date">{{ this.date }}</small>
-    </td>
-    <td class="font-number">
-      <div>{{this.amount}} 円</div>
-      {{#if isPaidAlone }}
-      {{else}}
-      <div class="paidAlone">AA</div>
-      {{/if}}
-    </td>
-    <td>
-      <form action="/records/edit/{{this._id}}" method="GET">
-        <button type="submit" class="index-edit btn btn-light-sm">
-          <i class="fas fa-edit"></i></button>
-      </form>
-    </td>
-    <td>
-      <form action="/records/{{this._id}}?_method=DELETE" method="POST">
-        <button type="submit" class="index-delete btn btn-light-sm" onclick="return confirmDelete();">
-          <i class="far fa-trash-alt"></i>
-        </button>
-      </form>
-    </td>
-  </tr>
-  {{/each}}
-</table>
+  <table class="table text-center table-sm align-middle table-striped table-hover my-3">
+    {{#each recordList}}
+    <tr>
+      <td class="icon-category">
+        {{{ this.categoryId.icon }}}
+      </td>
+      <td>
+        <div class="font-text index-name">{{ this.nameOfCost }}</div>
+        <small class="font-number index-date">{{ this.date }}</small>
+      </td>
+      <td class="font-number">
+        <div>{{this.amount}} 円</div>
+        {{#if isPaidAlone }}
+        {{else}}
+        <div class="paidAlone">AA</div>
+        {{/if}}
+      </td>
+      <td>
+        <form action="/record/edit/{{this._id}}" method="GET">
+          <button type="submit" class="index-edit btn btn-light-sm">
+            <i class="fas fa-edit"></i></button>
+        </form>
+      </td>
+      <td>
+        <form action="/record/{{this._id}}?_method=DELETE" method="POST">
+          <button type="submit" class="index-delete btn btn-light-sm" onclick="return confirmDelete();">
+            <i class="far fa-trash-alt"></i>
+          </button>
+        </form>
+      </td>
+    </tr>
+    {{/each}}
+  </table>
 </div>
 
 <script>

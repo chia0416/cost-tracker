@@ -4,10 +4,12 @@ const PartnerModel = require('../models/partner')
 const UserModel = require('../models/user')
 const tools = require('../public/javascripts/getDate')
 const store = require('store')
+const categoryService = require('../service/categoryService')
 
 const costController = {
   getRecordByList: async (req, res) => {
     try {
+
       //after register page finish change here
       const user = await UserModel.findOne()
 
@@ -123,7 +125,6 @@ const costController = {
       recordList.forEach((data) => {
         totalAmount += data.amount
       })
-
       res.render('index', { partner, recordList, totalAmount, monthList, yearList, displayName: display.name, displayYear, displayMonth })
     } catch (e) {
       console.error(e)
@@ -137,7 +138,6 @@ const costController = {
         const isCreatedPage = true
         const category = data[0]
         const partner = data[1]
-        console.log(date)
         res.render('create', { isCreatedPage, date, category, partner })
       })
       .catch(err => console.error(err))
@@ -194,6 +194,27 @@ const costController = {
     } catch (e) {
       console.error(e)
     }
+  },
+
+  getRecordEdit: (req, res) => {
+    const id = req.params.id
+    const isEditedPage = true
+    RecordModel.findById(id)
+      .lean()
+      .then(record => {
+        categoryService.getCategoriesAndPartner(req, res, (data) => {
+          const cateId = record.categoryId
+          const date = record.date.toISOString().slice(0, 10)
+          const categories = data.category
+          const partners = data.partner
+          const cateName = data.category.find(({ _id }) => {
+            return _id.toString() === cateId.toString()
+          })
+          res.render('edit', { record, isEditedPage, date, category: categories, partner: partners, cateId })
+        })
+      })
+      .catch(error => console.error(error))
+
   }
 }
 

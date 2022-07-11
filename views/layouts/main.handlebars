@@ -22,10 +22,14 @@
   <form action="/">
     <header class="nav fixed-top justify-content-between">
       {{#if isCreatedPage}}
-      <div class="createdPage m-auto"> 新增 </div>
+      <div class="createdPage m-auto"> Create </div>
+      {{else}}
+      {{#if isEditedPage}}
+      <div class="createdPage m-auto"> Edit </div>
       {{else}}
       <li class="month-minus nav-item">
-        <a class="nav-link active" aria-current="page" href="?monthLeft={{displayMonth}}"><i class="bi bi-caret-left"></i></a>
+        <a class="nav-link active" aria-current="page" href="?monthLeft={{displayMonth}}"><i
+            class="bi bi-caret-left"></i></a>
       </li>
       <li class="nav-item d-flex justify-content-center">
         <div class="nav-item dropdown me-3">
@@ -59,6 +63,7 @@
       <li class="month-pluse nav-item">
         <a class="nav-link" href="?monthRight={{displayMonth}}"><i class="bi bi-caret-right"></i></a>
       </li>
+      {{/if}}
       {{/if}}
     </header>
   </form>
