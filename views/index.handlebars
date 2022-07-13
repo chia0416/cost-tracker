@@ -11,11 +11,9 @@
         <label class="form-label" for="keyword"></label>
         <select class="form-select" name="categories" id="categories" aria-label="multiple select" onchange="submit()">
           <option>類別</option>
-          <option>家居物業</option>
-          <option>交通出行</option>
-          <option>休閒娛樂</option>
-          <option>餐飲食品</option>
-          <option>其他</option>
+          {{#each categories}}
+          <option>{{this.name}}</option>
+          {{/each}}
         </select>
       </div>
     </form>

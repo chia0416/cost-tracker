@@ -9,9 +9,10 @@ const categoryService = require('../service/categoryService')
 const costController = {
   getRecordByList: async (req, res) => {
     try {
-
+      const categories = await CategoryModel.find().lean()
+      console.log(categories)
       //after register page finish change here
-      const user = await UserModel.findOne()
+      const user = await UserModel.findOne().lean()
 
       //for partnerId Category
       const partner = await PartnerModel.find().lean()
@@ -84,7 +85,7 @@ const costController = {
         store.set('monthStore', { monthId: displayMonth })
         store.set('yearStore', { yearId: displayYear })
       }
-      if (displayMonth < 0) {
+      if (displayMonth < 1) {
         displayMonth = '12'
         displayYear = Number(displayYear) - 1
         store.set('monthStore', { monthId: displayMonth })
@@ -125,7 +126,8 @@ const costController = {
       recordList.forEach((data) => {
         totalAmount += data.amount
       })
-      res.render('index', { partner, recordList, totalAmount, monthList, yearList, displayName: display.name, displayYear, displayMonth })
+
+      res.render('index', { partner, recordList, totalAmount, monthList, yearList, displayName: display.name, displayYear, displayMonth, categories })
     } catch (e) {
       console.error(e)
     }
@@ -174,7 +176,7 @@ const costController = {
           amount: friendPaidAmount,
           userId: userId,
           partnerId: anotherId,
-          isPaidAlone: paidAlone,
+          isPaidAlone: isPaidAlone,
         })
       }
 
@@ -207,14 +209,33 @@ const costController = {
           const date = record.date.toISOString().slice(0, 10)
           const categories = data.category
           const partners = data.partner
-          const cateName = data.category.find(({ _id }) => {
-            return _id.toString() === cateId.toString()
-          })
+          console.log(record)
           res.render('edit', { record, isEditedPage, date, category: categories, partner: partners, cateId })
         })
       })
       .catch(error => console.error(error))
 
+  },
+
+  recordEdited: (req, res) => {
+    const id = req.params.id
+    const { nameOfCost, date, categoryId, partnerId, merchant, amount } = req.body
+
+    console.log(req.body)
+    return RecordModel.findById(id)
+      .then(record => {
+        record.nameOfCost = nameOfCost
+        record.date = date
+        record.categoryId = categoryId
+        record.merchant = merchant
+        record.amount = amount
+        record.partnerId = partnerId
+        return record.save()
+      })
+      .then(() => {
+        res.redirect('/')
+      })
+      .catch(error => console.error(error))
   }
 }
 

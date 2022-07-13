@@ -2,11 +2,11 @@
 
   <div class="box">
     <h2 class="box-title text-center">請輸入支出</h2>
-    <form class="row" action="/record/edit" method="POST">
+    <form class="row" action="/record/edit/{{record._id}}?_method=PUT" method="POST">
       <div class="form-group col-md-12">
         <label for="nameOfCost" class="form-label">名前:</label>
-        <input class="form-control input-box" type="text" id="nameOfCost" name="nameOfCost" value="{{record.nameOfCost}}"
-          placeholder="例：服、家賃...など" required>
+        <input class="form-control input-box" type="text" id="nameOfCost" name="nameOfCost"
+          value="{{record.nameOfCost}}" placeholder="例：服、家賃...など" required>
       </div>
       <div class="form-group col-6 mt-2">
         <label for="date" class="form-label">日期:</label>
@@ -14,7 +14,8 @@
       </div>
       <div class="form-group col-6 mt-2">
         <label for="categoryId" class="form-label">類別:</label>
-        <select class="form-select form-control" aria-label=".form-select-lg example" value="1" placeholder='2'name="categoryId" id="categoryId">
+        <select class="form-select form-control" aria-label=".form-select-lg example" value="1" placeholder='2'
+          name="categoryId" id="categoryId">
           {{#each category}}
           <option {{#ifCond this._id ../cateId}} selected {{/ifCond}} value="{{this._id}}">{{this.name}}</option>
           {{/each}}
@@ -30,32 +31,12 @@
       </div>
       <div class="form-group col-6 mt-2">
         <label for="merchant" class="form-label">店の名前:</label>
-        <input class="form-control input-box" type="text" id="merchant" name="merchant" value="" placeholder="選填">
+        <input class="form-control input-box" type="text" id="merchant" name="merchant" value="{{record.merchant}}" placeholder="選填">
       </div>
       <div class="form-group mt-2">
         <label for="amount" class="form-label">支払った金額:</label>
-        <input class="input-box form-control" type="number" id="amount" name="amount" maxlength="8" value="0" required>
+        <input class="input-box form-control" type="number" id="amount" name="amount" maxlength="8" value="{{record.amount}}" required>
         <input class="form-range col-3" min="0" max="10000" step="100" id="range" oninput="change()" type="range" 　>
-      </div>
-      <div class="from-group col-6 mt-2">
-        <div>
-          <input id="checkbox" class="form-check-input" name="paidAlone" type="checkbox"
-            checked>
-          <label class="form-check-label" for="flexCheckDefault">
-            一人で払う？
-          </label>
-        </div>
-        <div>
-          <input id="checkbox2" class="form-check-input" name="AA" type="checkbox" onclick="paidHalf()">
-          <label class="form-check-label" for="flexCheckDefault">
-            半分づつ払う?
-          </label>
-        </div>
-      </div>
-      <div class="form-group col-6">
-        <label for="friendPaidAmount" class="form-label">他の人の払った金額:</label>
-        <input id="friendPaidAmount" class="input-box form-control " type="number" id="friendPaidAmount"
-          name="friendPaidAmount" maxlength="8" min="0" value="0" onfocusout="amountChange()">
       </div>
 
       <div class="d-grid gap-2 mx-auto mt-3">
@@ -71,26 +52,6 @@
     const num = document.getElementById("range");
     const location = document.getElementById("amount");
     location.value = num.value;
-  }
-  function paidHalf() {
-    const location = document.getElementById("friendPaidAmount")
-    const checkbox2 = document.getElementById("checkbox2")
-    const amount = document.getElementById("amount")
-    if (checkbox2.checked) {
-      localStorage.setItem('originalAmount', amount.value)
-      location.value = amount.value / 2
-      amount.value = amount.value - location.value
-    }
-    if (!checkbox2.checked) {
-      amount.value = Number(localStorage.getItem('originalAmount'))
-      localStorage.removeItem('originalAmount')
-      location.value = 0
-    }
-  }
-  function amountChange() {
-    const amount = document.getElementById("amount")
-    const location = document.getElementById("friendPaidAmount")
-    amount.value = amount.value - location.value
   }
   function mention() {
     const amount = document.getElementById("amount")
