@@ -236,6 +236,14 @@ const costController = {
         res.redirect('/')
       })
       .catch(error => console.error(error))
+  },
+
+  recordDelete: (req, res) => {
+    const id = req.params.id
+    return RecordModel.findById(id)
+      .then(record => record.remove())
+      .then(() => res.redirect('/'))
+      .catch((e) => console.error(e))
   }
 }
 
