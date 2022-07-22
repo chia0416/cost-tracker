@@ -10,7 +10,6 @@ const costController = {
   getRecordByList: async (req, res) => {
     try {
       const categories = await CategoryModel.find().lean()
-      console.log(categories)
       //after register page finish change here
       const user = await UserModel.findOne().lean()
 
@@ -209,7 +208,6 @@ const costController = {
           const date = record.date.toISOString().slice(0, 10)
           const categories = data.category
           const partners = data.partner
-          console.log(record)
           res.render('edit', { record, isEditedPage, date, category: categories, partner: partners, cateId })
         })
       })
@@ -220,8 +218,6 @@ const costController = {
   recordEdited: (req, res) => {
     const id = req.params.id
     const { nameOfCost, date, categoryId, partnerId, merchant, amount } = req.body
-
-    console.log(req.body)
     return RecordModel.findById(id)
       .then(record => {
         record.nameOfCost = nameOfCost
