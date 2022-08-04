@@ -36,6 +36,7 @@ table {
 
 .bottom-nav {
   background-color: antiquewhite;
+  line-height: 1;
 }
 
 .nav-tabs .nav-link {

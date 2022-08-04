@@ -5,56 +5,94 @@ const UserModel = require('../models/user')
 const tools = require('../public/javascripts/getDate')
 const store = require('store')
 const categoryService = require('../service/categoryService')
+const setUseId = '62b95dc93cb06f9a0d810dc7'
+let count = 0
 
 const costController = {
   getRecordByList: async (req, res) => {
     try {
-      const categories = await CategoryModel.find().lean()
-      //after register page finish change here
-      const user = await UserModel.findOne().lean()
+      const recordDetail = await RecordModel.find({ userId: setUseId }).populate('categoryId').populate('userId').populate('partnerId').lean()
 
-      //for partnerId Category
-      const partner = await PartnerModel.find().lean()
+      //方法一
+      function removeDuplicates(originalArray, ObjName, compareName) {
+        let newArray = [];
+        let lookupObject = {};
 
+        for (let i in originalArray) {
+          lookupObject[originalArray[i][ObjName][compareName]] = originalArray[i][ObjName]
+          //解構賦值 (Destructuring assignment) 
+          //let 特定名稱 = 指定的值 例：[a, b] = [10, 20];
+        }
+
+        for (i in lookupObject) {
+          newArray.push(lookupObject[i]);
+        }
+        return newArray;
+      }
+
+      //方法二
+      function removeDuplicatesBySet(oriArray, setName) {
+        const set = new Set()
+        let objArray = oriArray.filter((item) => {
+          if (setName === 'date') {
+            item[setName] = item[setName].toISOString().slice(0, 10)
+          }
+          return !set.has(item[setName]) ? set.add(item[setName]) : false
+        })
+        set.clear()
+        return objArray = Array.from(objArray, (item) => {
+          return item[setName]
+        })
+      }
+      function removeDuplicatesBySet2(arr, sliceStart, sliceEnd) {
+        const result = new Set();
+        let newArr = arr.filter(item => {
+          item = item.slice(sliceStart, sliceEnd)
+          return !result.has(item) ? result.add(item) : false
+        })
+        return newArr = Array.from(newArr, (arr) => {
+          return arr.slice(sliceStart, sliceEnd)
+        })
+      }
+      const partnerArray = removeDuplicatesBySet(recordDetail, 'partnerId')
+      const categoryArray = removeDuplicatesBySet(recordDetail, 'categoryId')
+      const dateArray = removeDuplicatesBySet(recordDetail, 'date')
+      const yearArray = removeDuplicatesBySet2(dateArray, 0, 4)
+      const monthArray = removeDuplicatesBySet2(dateArray, 5, 7)
+   
+      /* ----get certain partnerId & month & year ----- */
       const nameQuery = req.query.partnerId
       const monthQuery = req.query.month
       const yearQuery = req.query.year
       const monthLeftQuery = req.query.monthLeft
       const monthRightQuery = req.query.monthRight
-
       const nameStore = store.get('nameStore')
       const monthStore = store.get('monthStore')
       const yearStore = store.get('yearStore')
-
+      const date = tools.getToday()
       let displayId = ''
-      //get displayId -first time -nameQuery -otherSearch
+      let displayMonth = date.slice(5, 7)
+      let displayYear = date.slice(0, 4)
+
+      //get displayId
       if (nameQuery) {
-        displayId = nameQuery
-        //only when nameQuery  
         store.set('nameStore', { nameId: nameQuery })
+        displayId = nameQuery
       } else if (nameStore) {
-        // no nameQuery
         displayId = nameStore.nameId
       } else {
-        // no nameQuery && no nameStore
+        const user = await UserModel.findOne().lean()
         const admin = await PartnerModel.findOne({ name: user.name })
         displayId = admin._id
       }
-
-      const date = tools.getToday()
-      //filter by year
-      let displayYear = ''
+      //get displayYear
       if (yearQuery) {
         displayYear = yearQuery
         store.set('yearStore', { yearId: yearQuery })
       } else if (yearStore) {
         displayYear = yearStore.yearId
-      } else {
-        displayYear = date.slice(0, 4)
       }
-
-      //filter by month
-      let displayMonth = date.slice(5, 7)
+      //get displayMonth
       if (monthQuery) {
         displayMonth = monthQuery
         store.set('monthStore', { monthId: monthQuery })
@@ -90,43 +128,23 @@ const costController = {
         store.set('monthStore', { monthId: displayMonth })
         store.set('yearStore', { yearId: displayYear })
       }
-      //for showDisplayName after get certain Id
-      const display = await PartnerModel.findById(displayId)
+      /* ----get certain partnerId & month & year ----- */
 
-      //filter by name 先找人在查月份（固定人不固定月份）
-      let recordList = await RecordModel.find({ partnerId: displayId }).populate('categoryId').lean()
-
-      // format the date
-      let dateList = []
-      recordList.forEach((data) => {
-        data.date = data.date.toISOString().slice(0, 10)
-        dateList.push(data.date.slice(0, 7))
-        data.month = data.date.slice(5, 7)
-        data.year = data.date.slice(0, 4)
+      const renderDate = recordDetail.filter(data => {
+        const partnerId = data.partnerId._id
+        const year = data.date.slice(0, 4)
+        const month = data.date.slice(5, 7)
+        return (String(partnerId) === String(displayId) && year === displayYear && month === displayMonth)
       })
 
-      //for display date by order
-      dateList = dateList.filter((element, index, arr) => {
-        return arr.indexOf(element) === index
-      })
-      let yearList = Array.from(dateList, date => date.slice(0, 4))
-      let monthList = Array.from(dateList, date => date.slice(5, 7))
-      yearList = [...(new Set(yearList))]
-      monthList = [...(new Set(monthList))]
-      monthList = monthList.sort((a, b) => a - b)
-
-      //get filter recordList
-      recordList = recordList.filter(data => {
-        if (data.month === displayMonth && data.year === displayYear) {
-          return data
-        }
-      })
       let totalAmount = 0
-      recordList.forEach((data) => {
+      renderDate.forEach((data) => {
         totalAmount += data.amount
       })
+      //render partnerID 查詢名字
+      const display = partnerArray.find(data => String(displayId) === String(data._id))
 
-      res.render('index', { partner, recordList, totalAmount, monthList, yearList, displayName: display.name, displayYear, displayMonth, categories })
+      res.render('index', { totalAmount, categories: categoryArray, recordList: renderDate, partner: partnerArray, monthList: monthArray, yearList: yearArray, displayYear, displayName: display.name, displayMonth, })
     } catch (e) {
       console.error(e)
     }
@@ -150,6 +168,7 @@ const costController = {
       if (amount < 0 || friendPaidAmount < 0) {
         return res.redirect('/record/new')
       }
+      const month = date.slice(5, 7)
       let userId = ''
       let anotherId = ''
       let isPaidAlone = true
@@ -189,6 +208,8 @@ const costController = {
         partnerId: partnerId,
         isPaidAlone: isPaidAlone,
       })
+      store.set('nameStore', { nameId: partnerId })
+      store.set('monthStore', { monthId: month })
 
       return res.redirect('/')
 
